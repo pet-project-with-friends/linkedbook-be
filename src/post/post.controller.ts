@@ -15,6 +15,7 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { PostService } from './post.service';
 import { LikeRequest, PostPagination, PostRequest } from 'src/model/post.model';
 import {
+  ApiBearerAuth,
   ApiBody,
   ApiOperation,
   ApiParam,
@@ -26,6 +27,7 @@ import {
 @Controller('posts')
 @UseGuards(AuthGuard)
 @ApiTags('Post')
+@ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
 
