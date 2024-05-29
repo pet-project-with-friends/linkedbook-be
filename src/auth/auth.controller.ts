@@ -16,8 +16,10 @@ import { JwtResponse, RefreshTokenRequest } from 'src/model/token.model';
 import { AuthGuard } from './auth.guard';
 import { ValidateUsername } from 'src/model/user.model';
 import { Response } from 'express';
+import { ApiTags } from '@nestjs/swagger';
 
 @Controller('auth')
+@ApiTags('Authentication')
 export class AuthController {
   constructor(private authService: AuthService) {}
 
