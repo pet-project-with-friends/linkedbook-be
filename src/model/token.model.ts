@@ -7,7 +7,6 @@ export interface TokenPayload {
 export interface JwtPayload {
   sub: string;
   username?: string;
-  hash?: string;
   createAt?: Date;
   iat: number;
   exp: number;
