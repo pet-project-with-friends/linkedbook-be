@@ -3,19 +3,13 @@ import {
   Body,
   Controller,
   Delete,
-  Headers,
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { LoginRequest, RegisterRequest } from 'src/model/auth.model';
-import { JwtResponse, RefreshTokenRequest } from 'src/model/token.model';
-import { AuthGuard } from './auth.guard';
-import { ValidateUsername } from 'src/model/user.model';
-import { Response } from 'express';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,6 +17,12 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request, Response } from 'express';
+import { LoginRequest, RegisterRequest } from 'src/model/auth.model';
+import { JwtResponse, RefreshTokenRequest } from 'src/model/token.model';
+import { ValidateUsername } from 'src/model/user.model';
+import { AuthGuard } from './auth.guard';
+import { AuthService } from './auth.service';
 
 @Controller('auth')
 @ApiTags('Authentication')
@@ -96,7 +96,8 @@ export class AuthController {
   @ApiResponse({ status: 200 })
   @ApiResponse({ status: 401, description: 'Token invalid!' })
   @ApiResponse({ status: 500, description: 'Cannot revoke token.' })
-  async revokeToken(@Headers('authorization') token: string) {
+  async revokeToken(@Req() req: Request) {
+    const token = req.headers.authorization;
     const tokenWithoutPrefix = token.replace('Bearer ', '');
     return this.authService.revokeToken(tokenWithoutPrefix);
   }

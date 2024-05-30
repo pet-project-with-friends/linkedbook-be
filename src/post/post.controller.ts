@@ -2,18 +2,15 @@ import {
   Body,
   Controller,
   Get,
-  Headers,
   HttpCode,
   Param,
   Patch,
   Post,
   Put,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/auth/auth.guard';
-import { PostService } from './post.service';
-import { LikeRequest, PostPagination, PostRequest } from 'src/model/post.model';
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,6 +20,10 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
+import { AuthGuard } from 'src/auth/auth.guard';
+import { LikeRequest, PostPagination, PostRequest } from 'src/model/post.model';
+import { PostService } from './post.service';
 
 @Controller('posts')
 @UseGuards(AuthGuard)
@@ -44,10 +45,8 @@ export class PostController {
   })
   @ApiResponse({ status: 201, description: 'Create successfully!' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  async create(
-    @Body() data: PostRequest,
-    @Headers('authorization') token: string,
-  ) {
+  async create(@Body() data: PostRequest, @Req() req: Request) {
+    const token = req.headers.authorization;
     const tokenWithoutPrefix = token.replace('Bearer ', '');
     return this.postService.create(data, tokenWithoutPrefix);
   }
@@ -100,10 +99,8 @@ export class PostController {
   @ApiOperation({ summary: 'Like or unlike a post' })
   @ApiResponse({ status: 200, description: 'Like or unlike the post.' })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  async like(
-    @Query() query: LikeRequest,
-    @Headers('authorization') token: string,
-  ) {
+  async like(@Query() query: LikeRequest, @Req() req: Request) {
+    const token = req.headers.authorization;
     const tokenWithoutPrefix = token.replace('Bearer ', '');
     return this.postService.likeOrNot(query, tokenWithoutPrefix);
   }
