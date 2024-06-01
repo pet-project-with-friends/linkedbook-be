@@ -96,7 +96,7 @@ export class PostController {
   @Post('like')
   @HttpCode(200)
   @ApiOperation({ summary: 'Like or unlike a post' })
-  @ApiResponse({ status: 200, description: 'Like or unlike the post.' })
+  @ApiResponse({ status: 200 })
   @ApiResponse({ status: 401, description: 'Unauthorized.' })
   async like(@Query() query: LikeRequest, @Req() req: Request) {
     const token = req.headers.authorization;
