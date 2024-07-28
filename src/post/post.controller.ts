@@ -38,8 +38,16 @@ export class PostController {
     schema: {
       type: 'object',
       properties: {
-        title: { type: 'string', example: 'string' },
         content: { type: 'string', example: 'string' },
+        imageUrl: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              url: { type: 'string', example: 'https://example.com/image.jpg' },
+            },
+          },
+        },
       },
     },
   })
