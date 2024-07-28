@@ -1,5 +1,10 @@
+interface ImageProps {
+  url: string;
+}
+
 export interface PostRequest {
   content: string;
+  imageUrl: ImageProps[];
 }
 
 export interface PostPagination {
@@ -18,4 +23,9 @@ export interface PostResponse {
   author: string;
   likes: number;
   createAt: Date;
+}
+
+export interface CommentRequest {
+  content: string;
+  postId: string;
 }

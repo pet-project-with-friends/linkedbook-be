@@ -14,29 +14,44 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  username  String    @unique
-  email     String    @unique
+  id        String     @id @default(uuid())
+  username  String     @unique
+  email     String     @unique
   password  String
   role      String
-  status    String?   @default("active")
-  createAt  DateTime? @default(now())
+  status    String?    @default("active")
+  createAt  DateTime?  @default(now())
   likes     Like[]
   posts     Post[]
-  Token     Token[]
+  tokens    Token[]
+  favorites Favorite[]
+  images    Image[]
+  friends   Friend[]
+  comments  Comment[]
 }
 
 model Post {
-  id       String    @id @default(uuid())
-  userId   String
-  content  String
-  status   String?   @default("active")
-  createAt DateTime? @default(now())
-  likes    Like[]
-  author   User?     @relation(fields: [userId], references: [id])
+  id        String     @id @default(uuid())
+  userId    String
+  content   String
+  status    String?    @default("active")
+  createAt  DateTime?  @default(now())
+  likes     Like[]
+  author    User?      @relation(fields: [userId], references: [id])
+  favorites Favorite[]
+  images    Image[]
+  comments  Comment[]
 }
 
 model Like {
+  id     String @id @default(uuid())
+  userId String
+  postId String
+  user   User   @relation(fields: [userId], references: [id])
+  post   Post   @relation(fields: [postId], references: [id])
+}
+
+model Favorite {
   id     String @id @default(uuid())
   userId String
   postId String
@@ -52,4 +67,31 @@ model Token {
   accessExpires  DateTime
   refreshExpires DateTime
   user           User     @relation(fields: [userId], references: [id])
+}
+
+model Friend {
+  id      String @id @default(uuid())
+  ownerId String
+  refId   String
+  user    User[]
+}
+
+model Image {
+  id     String  @id @default(uuid())
+  userId String?
+  postId String?
+  url    String
+  user   User?   @relation(fields: [userId], references: [id])
+  post   Post?   @relation(fields: [postId], references: [id])
+}
+
+model Comment {
+  id          String    @id @default(uuid())
+  userId      String
+  postId      String
+  content     String
+  status      Boolean   @default(false)
+  createdDate DateTime? @default(now())
+  user        User      @relation(fields: [userId], references: [id])
+  post        Post      @relation(fields: [postId], references: [id])
 }

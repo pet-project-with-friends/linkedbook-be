@@ -26,7 +26,7 @@ export class PostService {
     private tokenService: TokenService,
   ) {}
 
-  async create({ content }: PostRequest, token: string) {
+  async create({ content, imageUrl }: PostRequest, token: string) {
     const strLen = content?.trim().length;
     if (content === undefined || strLen <= 15 || strLen >= 2000) {
       throw new BadRequestException('Content must be 15 to 2000 characters.');
@@ -45,6 +45,23 @@ export class PostService {
       });
     } catch (e) {
       throw new InternalServerErrorException('Cannot create new post.');
+    }
+
+    try {
+      const post = await this.prisma.post.findFirst({
+        orderBy: {
+          id: 'desc',
+        },
+        take: 1,
+      });
+
+      for (const img of imageUrl) {
+        await this.prisma.image.create({
+          data: { postId: post.id, url: img.url },
+        });
+      }
+    } catch (error) {
+      throw new InternalServerErrorException('Cannot add image to post.');
     }
   }
 
