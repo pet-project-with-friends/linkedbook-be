@@ -5,6 +5,10 @@ export interface UserPayload {
   role: string;
 }
 
+export interface UploadImagePayload {
+  url: string;
+}
+
 export interface UserResponse {
   email: string;
   username: string;

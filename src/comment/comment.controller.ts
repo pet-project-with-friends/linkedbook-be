@@ -1,5 +1,11 @@
 import { Body, Controller, Post, Req, UseGuards } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { Request } from 'express';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { CommentRequest } from 'src/model/post.model';
@@ -8,6 +14,7 @@ import { CommentService } from './comment.service';
 @Controller('comment')
 @ApiTags('Comment')
 @UseGuards(AuthGuard)
+@ApiBearerAuth()
 export class CommentController {
   constructor(private commentService: CommentService) {}
 

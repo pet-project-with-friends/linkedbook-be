@@ -1,11 +1,23 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { User } from '@prisma/client';
-import { UserPayload, UserResponse } from 'src/model/user.model';
+import {
+  UploadImagePayload,
+  UserPayload,
+  UserResponse,
+} from 'src/model/user.model';
 import { PrismaService } from 'src/prisma.service';
+import { TokenService } from 'src/token/token.service';
 
 @Injectable()
 export class UserService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private token: TokenService,
+  ) {}
 
   async findEmail(email: string): Promise<undefined | UserResponse> {
     const user = await this.prisma.user.findUnique({
@@ -59,6 +71,35 @@ export class UserService {
       });
     } catch (error) {
       throw new InternalServerErrorException('Cannot register user.');
+    }
+  }
+
+  async uploadImage(payload: UploadImagePayload, token: string) {
+    const decodedToken = await this.token.verify(token);
+    const user = await this.findById(decodedToken.sub);
+
+    try {
+      await this.prisma.image.updateMany({
+        where: { id: user.avatarId },
+        data: { url: payload.url },
+      });
+    } catch (error) {
+      throw new InternalServerErrorException('Failed to upload avatar!');
+    }
+  }
+
+  async getImages(token: string) {
+    const decodedToken = await this.token.verify(token);
+    const user = await this.findById(decodedToken.sub);
+
+    try {
+      return await this.prisma.user.findMany({
+        where: { avatarId: user.id },
+        orderBy: { createAt: 'desc' },
+        include: { image: true },
+      });
+    } catch (error) {
+      throw new BadRequestException('Not found.');
     }
   }
 }
